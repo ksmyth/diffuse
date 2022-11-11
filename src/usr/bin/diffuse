@@ -23,6 +23,7 @@ import codecs
 import gettext
 import locale
 import os
+import os.path
 import sys
 
 # use the program's location as a starting place to search for supporting files
@@ -221,6 +222,9 @@ def globEscape(s):
 if __name__ == '__main__':
     # this is not automatically set on some older version of PyGTK
     gtk.window_set_default_icon_name('diffuse')
+    if not hasattr(sys, 'frozen'):
+        gtk.window_set_default_icon_from_file(os.path.join(bin_dir, '../../../windows-installer/diffuse.ico'))
+
 
 # convenience class for displaying a message dialogue
 class MessageDialog(gtk.MessageDialog):
