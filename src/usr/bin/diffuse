@@ -3397,7 +3397,9 @@ class FileDiffViewer(gtk.Table):
             'copy_left_into_selection': self.copy_left_into_selection,
             'copy_right_into_selection': self.copy_right_into_selection,
             'merge_from_left_then_right': self.merge_from_left_then_right,
-            'merge_from_right_then_left': self.merge_from_right_then_left }
+            'merge_from_right_then_left': self.merge_from_right_then_left,
+            'git_add': self.git_add,
+            }
 
         # create panes
         self.dareas = []
@@ -5970,6 +5972,16 @@ class FileDiffViewer(gtk.Table):
     def paste(self):
          gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD).request_text(self.receive_clipboard_text_cb)
 
+    def git_add(self):
+        f = self.current_pane
+        h = self.headers[f]
+        info = h.info
+        name, encoding, rev, label = info.name, info.encoding, info.revision, info.label
+        save_as = name is None or rev is not None
+
+        if save_as is False:
+            subprocess.check_output(['git', 'add', name])
+
     # 'clear_edits' action
     def clear_edits(self):
         self.setLineMode()
@@ -7696,7 +7708,10 @@ class Diffuse(gtk.Window):
            [ gtk.STOCK_CUT, self.button_cb, 'cut', _('Cut') ],
            [ gtk.STOCK_COPY, self.button_cb, 'copy', _('Copy') ],
            [ gtk.STOCK_PASTE, self.button_cb, 'paste', _('Paste') ],
-           [ gtk.STOCK_CLEAR, self.button_cb, 'clear_edits', _('Clear Edits') ] ])
+           [ gtk.STOCK_CLEAR, self.button_cb, 'clear_edits', _('Clear Edits') ],
+           [ gtk.STOCK_ADD, self.button_cb, 'git_add', _('Git Add') ],
+           ],
+           )
         # avoid the button bar from dictating the minimum window size
         hbox.set_size_request(0, hbox.get_size_request()[1])
         vbox.pack_start(hbox, False, False, 0)
